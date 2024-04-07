@@ -10,14 +10,7 @@ const DB = process.env.DATABASE.replace(
     process.env.DATABASE_PASSWORD,
 );
 
-mongoose
-    .connect(DB, {
-        useCreateIndex: true,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false,
-    })
-    .then(() => console.log('connection to DB is successful'));
+mongoose.connect(DB).then(() => console.log('connection to DB is successful'));
 
 const port = 3000;
 app.listen(port, () => {

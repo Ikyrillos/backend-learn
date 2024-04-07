@@ -85,8 +85,24 @@ exports.geAllTours = async (req, res) => {
             (match) => `$${match}`,
         );
         console.log(queryStr);
-        const query = Tour.find(JSON.parse(queryStr));
+        let query = Tour.find(JSON.parse(queryStr));
 
+        /// Advanced filtering (Sorting)
+        if (req.query.sort) {
+            const sortQuery = req.query.sort.split(',').join(' ');
+            query = query.sort(sortQuery);
+        } else {
+            query = query.sort('-createdAt');
+        }
+
+        /// Advanced filtering (Field limiting)
+        if (req.query.fields) {
+            console.log(req.query.fields);
+            const fieldsQuery = req.query.fields.split(',').join(' ');
+            query = query.select(fieldsQuery);
+        } else {
+            query = query.select('__v');
+        }
         /// Execute the query
         const tours = await query;
 
