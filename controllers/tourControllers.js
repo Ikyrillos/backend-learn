@@ -101,8 +101,23 @@ exports.geAllTours = async (req, res) => {
             const fieldsQuery = req.query.fields.split(',').join(' ');
             query = query.select(fieldsQuery);
         } else {
-            query = query.select('__v');
+            query = query.select('-__v');
         }
+
+        /// Pagination
+        const page = req.query.page * 1 || 1;
+        const limit = req.query.limit * 1 || 100;
+        const skip = (page - 1) * limit;
+
+        query = query.skip(skip).limit(limit);
+
+        if (req.query.page) {
+            const numDocs = await Tour.countDocuments();
+            if (skip >= numDocs) {
+                throw new Error('page not found');
+            }
+        }
+
         /// Execute the query
         const tours = await query;
 
