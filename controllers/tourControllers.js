@@ -1,6 +1,13 @@
 /* eslint-disable node/no-unsupported-features/es-syntax */
 const Tour = require('../models/tourModel');
 
+exports.aliasTopTours = (req, res, next) => {
+    req.query.sort = '-ratingsAverage,price';
+    req.query.limit = 5;
+    req.query.fields = 'name,summary,ratingsAverage,price';
+    next();
+};
+
 exports.createTour = async (req, res) => {
     try {
         const newTour = await Tour.create(req.body);
