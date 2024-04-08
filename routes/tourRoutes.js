@@ -8,7 +8,7 @@ router
     .route('/top-5-cheap')
     .get(tourControllers.aliasTopTours, tourControllers.geAllTours);
 
-router.route('/tours-stats').get(tourControllers.toursStats);
+router.route('/tours-stats').get(tourControllers.getToursStats);
 
 router
     .route(`/`)

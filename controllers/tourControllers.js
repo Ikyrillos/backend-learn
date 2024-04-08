@@ -106,7 +106,7 @@ exports.getTour = async (req, res) => {
     }
 };
 
-exports.toursStats = async (req, res) => {
+exports.getToursStats = async (req, res) => {
     try {
         const stats = await Tour.aggregate([
             {
