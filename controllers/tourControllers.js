@@ -2,9 +2,12 @@
 const Tour = require('../models/tourModel');
 
 const APIFeatures = require('../utils/apiFeatures');
+const AppError = require('../utils/appError');
 
 const catchAsync = require('../utils/catchAsync');
 
+/// used as follows
+/// router.route('/top-5-cheap').get(tourControllers.aliasTopTours, tourControllers.geAllTours);
 exports.aliasTopTours = (req, res, next) => {
     req.query.sort = '-ratingsAverage,price';
     req.query.limit = 5;
@@ -43,7 +46,12 @@ exports.createTour = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteTour = catchAsync(async (req, res, next) => {
-    await Tour.findByIdAndDelete(req.params.id);
+    const tour = await Tour.findByIdAndDelete(req.params.id);
+    if (!tour) {
+        return next(
+            new AppError("Couldn't find tour with the provided id", 404),
+        );
+    }
     res.status(204).json({
         status: 'success',
         body: null,
@@ -55,6 +63,11 @@ exports.updateTour = catchAsync(async (req, res, next) => {
         new: true,
         runValidators: true,
     });
+    if (!tour) {
+        return next(
+            new AppError("Couldn't find tour with the provided id", 404),
+        );
+    }
     res.status(200).json({
         status: 'success',
         body: {
@@ -65,6 +78,11 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 
 exports.getTour = catchAsync(async (req, res, next) => {
     const tour = await Tour.findById(req.params.id);
+    if (!tour) {
+        return next(
+            new AppError("Couldn't find tour with the provided id", 404),
+        );
+    }
     res.status(200).json({
         status: 'success',
         body: {
