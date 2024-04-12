@@ -9,16 +9,23 @@ const app = express();
 
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
+    app.use((req, res, next) => {
+        req.requestTime = new Date().toISOString();
+        console.log(req.body);
+        next();
+    });
 }
 
 // middleWares
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 //Routes
 app.use('/api/v1/tours', tourRoutes);
 app.use('/api/v1/users', userRoutes);
 
-app.all('*', (req, res, next) => {
+app.use('*', (req, res, next) => {
+    console.log(res);
     next(
         new AppError(`Cannot find the following path ${req.originalUrl}`, 404),
     );

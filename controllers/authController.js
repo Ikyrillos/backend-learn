@@ -52,6 +52,7 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
+    console.log('test');
     // 1) Getting token and check of it's there
     let token;
     if (
@@ -93,8 +94,23 @@ exports.protect = catchAsync(async (req, res, next) => {
             ),
         );
     }
-
     // GRANT ACCESS TO PROTECTED ROUTE
     req.user = currentUser;
     next();
 });
+
+exports.restrictTo =
+    (...roles) =>
+    (req, res, next) => {
+        // roles ['admin', 'lead-guide']. role='user'
+        if (!roles.includes(req.user.role)) {
+            return next(
+                new AppError(
+                    'You do not have permission to perform this action',
+                    403,
+                ),
+            );
+        }
+
+        next();
+    };
