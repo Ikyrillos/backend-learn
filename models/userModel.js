@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs/dist/bcrypt');
 const { default: mongoose } = require('mongoose');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const validator = require('validator');
 
 const userSchema = new mongoose.Schema({
@@ -12,6 +11,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'password is required'],
         minlength: 8,
+        select: false,
     },
     passwordConfirm: {
         type: String,
@@ -39,6 +39,14 @@ userSchema.pre('save', async function (next) {
     this.password = await bcrypt.hash(this.password, 12);
     this.passwordConfirm = undefined;
 });
+
+// methods to compare password with hashed password
+userSchema.methods.correctPassword = async function (
+    candidatePassword,
+    userPassword,
+) {
+    return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 const User = mongoose.model('User', userSchema);
 
