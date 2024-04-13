@@ -14,12 +14,19 @@ const filterObj = (obj, ...allowedFields) => {
     });
     return newObj;
 };
-exports.getAllUsers = (req, res) => {
-    res.status(500).json({
-        status: 'Error',
-        message: 'Not yet implemented',
+exports.getAllUsers = catchAsync(async (req, res, next) => {
+    const users = await User.find();
+
+    // SEND RESPONSE
+    res.status(200).json({
+        status: 'success',
+        results: users.length,
+        data: {
+            users,
+        },
     });
-};
+});
+
 exports.createUser = (req, res) => {
     res.status(500).json({
         status: 'Error',
@@ -32,6 +39,14 @@ exports.getUser = (req, res) => {
         message: 'Not yet implemented',
     });
 };
+exports.deleteMe = catchAsync(async (req, res, next) => {
+    await User.findByIdAndUpdate(req.user.id, { active: false });
+
+    res.status(204).json({
+        status: 'success',
+        data: null,
+    });
+});
 exports.updateMe = catchAsync(async (req, res, next) => {
     // 1) Create error if user POSTs password data
     if (req.body.password || req.body.passwordConfirm) {
