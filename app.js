@@ -2,13 +2,14 @@ const express = require('express');
 const morgan = require('morgan');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const tourRoutes = require('./routes/tourRoutes');
-const userRoutes = require('./routes/userRoutes');
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
-const mongoSanitize = require('express-mongo-sanitize');
+const tourRoutes = require('./routes/tourRoutes');
+const userRoutes = require('./routes/userRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 const app = express();
 
@@ -59,6 +60,7 @@ app.use(express.urlencoded({ extended: true }));
 //Routes
 app.use('/api/v1/tours', tourRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/reviews', reviewRoutes);
 
 // handle unhandled routes
 app.use('*', (req, res, next) => {

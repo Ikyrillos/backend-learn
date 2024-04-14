@@ -19,7 +19,7 @@ exports.geAllTours = catchAsync(async (req, res, next) => {
     const featuresQuery = new APIFeatures(Tour.find(), req.query)
         .filter()
         .sort()
-        .fieldsLimiting()
+        .limitFields()
         .paginate();
 
     /// Execute the query
@@ -78,7 +78,7 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 });
 
 exports.getTour = catchAsync(async (req, res, next) => {
-    const tour = await Tour.findById(req.params.id);
+    const tour = await Tour.findById(req.params.id).populate('reviews');
     if (!tour) {
         return next(
             new AppError("Couldn't find tour with the provided id", 404),
