@@ -1,12 +1,8 @@
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-/**
- * Filters an object based on the allowed fields.
- * @param {Object} obj - The object to be filtered.
- * @param {...string} allowedFields - The fields that are allowed in the filtered object.
- * @returns {Object} - The filtered object.
- */
+const factory = require('./handlerFactory');
+
 const filterObj = (obj, ...allowedFields) => {
     const newObj = {};
     Object.keys(obj).forEach((el) => {
@@ -14,39 +10,12 @@ const filterObj = (obj, ...allowedFields) => {
     });
     return newObj;
 };
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-    const users = await User.find();
 
-    // SEND RESPONSE
-    res.status(200).json({
-        status: 'success',
-        results: users.length,
-        data: {
-            users,
-        },
-    });
-});
-
-exports.createUser = (req, res) => {
-    res.status(500).json({
-        status: 'Error',
-        message: 'Not yet implemented',
-    });
+exports.getMe = (req, res, next) => {
+    req.params.id = req.user.id;
+    next();
 };
-exports.getUser = (req, res) => {
-    res.status(500).json({
-        status: 'Error',
-        message: 'Not yet implemented',
-    });
-};
-exports.deleteMe = catchAsync(async (req, res, next) => {
-    await User.findByIdAndUpdate(req.user.id, { active: false });
 
-    res.status(204).json({
-        status: 'success',
-        data: null,
-    });
-});
 exports.updateMe = catchAsync(async (req, res, next) => {
     // 1) Create error if user POSTs password data
     if (req.body.password || req.body.passwordConfirm) {
@@ -78,15 +47,26 @@ exports.updateMe = catchAsync(async (req, res, next) => {
         },
     });
 });
-exports.updateUser = (req, res) => {
+
+exports.deleteMe = catchAsync(async (req, res, next) => {
+    await User.findByIdAndUpdate(req.user.id, { active: false });
+
+    res.status(204).json({
+        status: 'success',
+        data: null,
+    });
+});
+
+exports.createUser = (req, res) => {
     res.status(500).json({
-        status: 'Error',
-        message: 'Not yet implemented',
+        status: 'error',
+        message: 'This route is not defined! Please use /signup instead',
     });
 };
-exports.deleteUser = (req, res) => {
-    res.status(500).json({
-        status: 'Error',
-        message: 'Not yet implemented',
-    });
-};
+
+exports.getUser = factory.getOne(User);
+exports.getAllUsers = factory.getAll(User);
+
+// Do NOT update passwords with this!
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);

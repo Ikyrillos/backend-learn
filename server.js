@@ -20,7 +20,7 @@ mongoose.connect(DB).then(() => {
     console.log('connection to DB is successful');
 });
 
-const port = 3000;
+const port = 33444;
 const server = app.listen(port, () => {
     // eslint-disable-next-line no-console
     console.log(`Server started on http://localhost:${port}`);
